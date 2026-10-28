@@ -7,7 +7,7 @@ const { spawn, execFile } = require('child_process');
 
 const SCRIPT_PATH =
   process.env.CHERRY_PICK_SCRIPT_PATH ||
-  path.join(__dirname, '..', '..', 'report_builder_worker', 'scripts', 'cherry-pick-release.sh');
+  path.join(__dirname, 'scripts', 'cherry-pick-release.sh');
 const PORT = process.env.PORT || 4545;
 const DEFAULT_REPO = 'ZuperHQ';
 const GITHUB_ORG = process.env.GITHUB_ORG || DEFAULT_REPO.split('/')[0];
