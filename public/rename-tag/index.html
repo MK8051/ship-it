@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Ship It — Rename Tag</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/common.css" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2024%2024%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%2224%22%20height%3D%2224%22%20rx%3D%226%22%20fill%3D%22%23f59e0b%22%2F%3E%3Cpath%20d%3D%22M4%204H12L18.5%2010.5L12.5%2016.5L6%2010Z%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%227.3%22%20cy%3D%227.3%22%20r%3D%221.1%22%20fill%3D%22%23f59e0b%22%2F%3E%3Cpath%20d%3D%22M13%2020l1.1-4%206-6%202.9%202.9-6%206-4%201.1z%22%20fill%3D%22%23fff%22%20stroke%3D%22%23f59e0b%22%20stroke-width%3D%220.6%22%2F%3E%3C%2Fsvg%3E" />
+</head>
+<body>
+  <a class="back" href="/">← Tools</a>
+  <h1>
+    <svg class="logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <rect width="24" height="24" rx="6" fill="#f59e0b"/>
+      <path d="M4 4H12L18.5 10.5L12.5 16.5L6 10Z" fill="#fff"/>
+      <circle cx="7.3" cy="7.3" r="1.1" fill="#f59e0b"/>
+      <path d="M13 20l1.1-4 6-6 2.9 2.9-6 6-4 1.1z" fill="#fff" stroke="#f59e0b" stroke-width="0.6"/>
+    </svg>
+    Rename a tag
+  </h1>
+  <p class="hint">Creates the new tag at the same commit as the current one (recreating the annotation if it's an annotated tag), then removes the current tag. Looks it up first so you can see what it points to before confirming.</p>
+
+  <form id="lookupForm">
+    <div>
+      <label for="repo">Repository</label>
+      <input id="repo" name="repo" placeholder="search ZuperHQ repos..." required />
+    </div>
+    <div>
+      <label for="oldTag">Current tag name</label>
+      <input id="oldTag" name="oldTag" placeholder="search tags, e.g. 2026_06_20" required />
+      <div class="hint">Type a few letters to search live against GitHub.</div>
+    </div>
+    <div>
+      <label for="newTag">New tag name</label>
+      <input id="newTag" name="newTag" placeholder="e.g. 2026_07_20" required />
+    </div>
+    <div>
+      <label for="token">GitHub token <a href="#" class="clear-token" id="clearToken" style="display:none">Clear saved token</a></label>
+      <input id="token" name="token" type="password" data-token-field placeholder="ghp_... or fine-grained token" required />
+      <div class="hint">Kept in this browser tab only (cleared when the tab closes) so you don't retype it between tools — never stored otherwise. Needs repo contents (read + write) access.</div>
+    </div>
+    <button type="submit" id="lookupBtn">Look up tag</button>
+  </form>
+
+  <div id="result"></div>
+
+  <form id="confirmForm" style="display:none">
+    <div>
+      <label for="confirmTag">Type the current tag name to confirm the rename</label>
+      <input id="confirmTag" name="confirmTag" autocomplete="off" required />
+    </div>
+    <button type="submit" id="renameBtn" class="danger" disabled>Rename tag</button>
+  </form>
+
+  <script src="/token-store.js"></script>
+  <script src="/combobox.js"></script>
+  <script src="/github-search.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

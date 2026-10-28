@@ -1,0 +1,13 @@
+{
+  "name": "ship-it",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Small internal web UI for cherry-picking PRs, managing tags, and releasing from Linear tasks.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

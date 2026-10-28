@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Ship It — Release</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/common.css" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2024%2024%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%2224%22%20height%3D%2224%22%20rx%3D%226%22%20fill%3D%22%234f46e5%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%226%22%20r%3D%222.2%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%2218%22%20r%3D%222.2%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2217%22%20cy%3D%2212%22%20r%3D%222.6%22%20fill%3D%22%23fff%22%2F%3E%3Cpath%20d%3D%22M7%208.2V18M7%208.2C7%2012%2010%2012%2013.5%2012%22%20stroke%3D%22%23fff%22%20stroke-width%3D%221.8%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E" />
+</head>
+<body>
+  <a class="back" href="/">← Tools</a>
+  <h1>
+    <svg class="logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <rect width="24" height="24" rx="6" fill="#4f46e5"/>
+      <circle cx="7" cy="6" r="2.2" fill="#fff"/>
+      <circle cx="7" cy="18" r="2.2" fill="#fff"/>
+      <circle cx="17" cy="12" r="2.6" fill="#fff"/>
+      <path d="M7 8.2V18M7 8.2C7 12 10 12 13.5 12" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    </svg>
+    Release
+  </h1>
+  <p class="hint">Pick your PRs, pick where to start from, pick where they go. One flow for tagging a release, opening a new release PR, or adding more PRs to one already in review.</p>
+
+  <h2>1. Where are the PRs coming from?</h2>
+  <fieldset>
+    <label><input type="radio" name="sourceMode" value="linear" checked /> Linear tasks</label>
+    <label><input type="radio" name="sourceMode" value="direct" /> Direct entry (I'll give repo + PR numbers myself)</label>
+  </fieldset>
+
+  <form id="resolveForm">
+    <div id="linearSourceFields">
+      <div>
+        <label for="taskInput">Linear task IDs</label>
+        <textarea id="taskInput" rows="3" placeholder="API-4454, API-4460&#10;or one per line"></textarea>
+      </div>
+      <div>
+        <label for="linearToken">Linear API key <a href="#" class="clear-token" id="clearLinearToken" style="display:none">Clear saved token</a></label>
+        <input id="linearToken" type="password" data-token-field placeholder="lin_api_..." />
+      </div>
+    </div>
+    <button type="submit" id="resolveBtn">Continue</button>
+  </form>
+
+  <div id="resolveResult"></div>
+
+  <div id="configStep" style="display:none">
+    <h2>2. Repositories &amp; PRs</h2>
+    <p class="hint">PR numbers are pre-filled from Linear where resolved. Edit them, or add a repo manually, to include anything Linear didn't auto-link.</p>
+    <ul class="repo-list" id="repoList"></ul>
+    <button type="button" id="addRepoBtn" style="background:transparent;border:1px solid #8888;color:inherit;margin-bottom:1.2rem;">+ Add repo manually</button>
+
+    <h2>3. Where should this go?</h2>
+    <fieldset>
+      <label><input type="radio" name="targetMode" value="tag" checked /> Create a new tag</label>
+      <label><input type="radio" name="targetMode" value="branch" /> Create a new branch (open a PR)</label>
+      <label><input type="radio" name="targetMode" value="update" /> Add to an existing branch (update its PR)</label>
+    </fieldset>
+
+    <form id="configForm">
+      <div id="tagFields">
+        <div>
+          <label for="cpBaseTag">Cherry-pick from</label>
+          <input id="cpBaseTag" value="deploy" />
+          <div class="hint">A tag or a branch — where the cherry-pick starts. Type a few letters to search live against GitHub. Applies to every repo below, unless a repo overrides it with its own "Cherry-pick from".</div>
+        </div>
+        <div>
+          <label for="newTagName">New tag name</label>
+          <input id="newTagName" placeholder="e.g. 2026_07_27" />
+        </div>
+      </div>
+
+      <div id="branchStartFields" style="display:none">
+        <div>
+          <label for="cpBaseBranch">Cherry-pick from</label>
+          <input id="cpBaseBranch" value="deploy" />
+          <div class="hint">A tag or a branch — where the cherry-pick starts (e.g. an old release tag if deploy has since moved on). Type a few letters to search live against GitHub. Applies to every repo below, unless a repo overrides it with its own "Cherry-pick from".</div>
+        </div>
+        <div>
+          <label for="newBranchName">New branch name</label>
+          <input id="newBranchName" placeholder="e.g. release/expense-category-fix" />
+        </div>
+      </div>
+
+      <div id="updateStartFields" style="display:none">
+        <div>
+          <label for="existingBranchName">Existing branch name</label>
+          <input id="existingBranchName" placeholder="e.g. release/expense-category-fix" />
+          <div class="hint">Must already exist on the remote — this cherry-picks onto its current tip and pushes the update. Type a few letters to search live against GitHub.</div>
+        </div>
+      </div>
+
+      <div id="prSharedFields" style="display:none">
+        <div>
+          <label for="prTargetBranch">Open PR against</label>
+          <input id="prTargetBranch" value="deploy" />
+          <div class="hint">Must be a real branch. For "existing branch", only used if that branch has no open PR yet. Type a few letters to search live against GitHub.</div>
+        </div>
+        <div>
+          <label for="prTitle">PR title</label>
+          <input id="prTitle" placeholder="e.g. Release: expense category fix" />
+        </div>
+        <div>
+          <label for="prBody">PR description (optional)</label>
+          <textarea id="prBody" rows="3" placeholder="Context for reviewers..."></textarea>
+        </div>
+      </div>
+
+      <div>
+        <label for="githubToken">GitHub token <a href="#" class="clear-token" id="clearGithubToken" style="display:none">Clear saved token</a></label>
+        <input id="githubToken" type="password" data-token-field placeholder="ghp_... or fine-grained token" required />
+        <div class="hint">Needs repo contents + pull-request read/write access on every included repo.</div>
+      </div>
+      <button type="submit" id="runBtn">Cherry-pick &amp; tag</button>
+    </form>
+  </div>
+
+  <div id="runStep" style="display:none">
+    <h2>Progress</h2>
+    <div id="repoRuns"></div>
+  </div>
+
+  <script src="/token-store.js"></script>
+  <script src="/combobox.js"></script>
+  <script src="/github-search.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
